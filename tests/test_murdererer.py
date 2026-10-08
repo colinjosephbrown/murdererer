@@ -17,6 +17,7 @@ Run from the repository root with either:
 """
 import importlib
 import itertools
+import json
 import os
 import random
 import shutil
@@ -83,6 +84,8 @@ class GeneratedGame(object):
             for person in self.game.persons:
                 with open(person["name"] + ".txt") as f:
                     sheets.append(f.read())
+            with open("game.json") as f:
+                self.game_json = json.load(f)
             return sheets
         finally:
             random.seed = original_seed
@@ -232,6 +235,11 @@ class ScenarioDataTest(unittest.TestCase):
         arrival = scenario.general["arrival"] % tuple(names)
         for name in names:
             self.assertIn(name, arrival)
+
+        images = scenario.general.get("images", {})
+        self.assertTrue(set(images) <= set(["invitation", "discovery"]), "unknown picture slots %s" % sorted(images))
+        for file_name in images.values():
+            self.assertTrue(file_name.strip(), "picture file names can't be blank")
 
         for person in scenario.characters:
             for key in PERSON_KEYS:
@@ -499,6 +507,61 @@ class CharacterSheetTest(_GeneratedGamesTestCase):
             for subject, pairs in g.clues.items():
                 for witness, room in pairs:
                     self.assertIn(g.text(room, "clue") % g.name(subject), g.sheets[witness], str(g))
+
+
+class GameJsonTest(_GeneratedGamesTestCase):
+    """game.json holds the same content as the text sheets, in structured form."""
+
+    def test_game_json_renders_to_the_same_text_sheets(self):
+        for g in self.games:
+            players = g.game_json["players"]
+            self.assertEqual([p["name"] for p in players], [g.name(p) for p in range(g.num_persons)], str(g))
+            for p, sheet in enumerate(players):
+                self.assertEqual(murdererer.Murdererer.character_sheet_text(sheet), g.sheets[p], str(g))
+
+    def test_game_json_records_the_solution(self):
+        for g in self.games:
+            solution = g.game_json["solution"]
+            self.assertEqual(solution["murderer"], g.name(g.murderer), str(g))
+            self.assertEqual(solution["clock"], g.game.clock_time(g.murder_time), str(g))
+            self.assertEqual(solution["room"], g.text(g.murder_room, "name"), str(g))
+            self.assertEqual(g.game_json["difficulty"], g.difficulty, str(g))
+            scenario = importlib.import_module(g.scenario_name)
+            self.assertEqual(g.game_json["images"], scenario.general.get("images", {}), str(g))
+
+    def test_evening_runs_from_dinner_at_6_to_the_discovery_at_midnight(self):
+        for g in self.games:
+            for sheet in g.game_json["players"]:
+                self.assertEqual(sheet["dinner_clock"], 6, str(g))
+                self.assertEqual([h["clock"] for h in sheet["hours"]], [7, 8, 9, 10, 11], str(g))
+                self.assertEqual(sheet["discovery_clock"], 12, str(g))
+
+    def test_dinner_and_discovery_text_agree_with_the_schedule(self):
+        for g in self.games:
+            sheet = g.game_json["players"][0]
+            self.assertIn("%d o'clock" % sheet["dinner_clock"], sheet["dinner"], str(g))
+            self.assertIn("midnight", sheet["discovery"], str(g))
+
+    def test_only_murders_and_minor_crimes_are_marked_secret(self):
+        for g in self.games:
+            for p, sheet in enumerate(g.game_json["players"]):
+                for t, hour in enumerate(sheet["hours"]):
+                    if p == g.murderer and t == g.murder_time:
+                        expected = "murder"
+                    elif t in g.minor_crimes and g.minor_crimes[t][0] == p:
+                        expected = "minor_crime"
+                    else:
+                        expected = None
+                    self.assertEqual(hour["secret"], expected, "%s %s at hour %d" % (g, g.name(p), t))
+
+    def test_hours_record_who_you_were_with(self):
+        for g in self.games:
+            for p, sheet in enumerate(g.game_json["players"]):
+                for t, hour in enumerate(sheet["hours"]):
+                    room = g.room_of(p, t)
+                    expected = sorted(g.name(o) for o in g.occupants(room, t) if o != p)
+                    self.assertEqual(sorted(hour["with"]), expected, str(g))
+                    self.assertEqual(hour["room"], g.text(room, "name"), str(g))
 
 
 class SolvabilityTest(_GeneratedGamesTestCase):

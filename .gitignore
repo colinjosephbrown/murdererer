@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+
+# Full-size source images; the resized copies next to them are what the cards use
+*/originals/

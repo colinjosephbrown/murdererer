@@ -3,9 +3,11 @@ general = {
     "phase1": "The Arrival",
     "arrival": "Upon arrival by carriage on the clear October evening, you enter and are greeted by the Count and his servants. The Count is a short man, slight in build and charismatic. He appears to be in his late twenties. Other guests are also arriving and you are introduced to %s, %s, %s and %s.",
     "phase2": "The Evening",
-    "dinner": "At 7 o'clock everyone reconvenes in the dining hall, looking fit for royal audience. The dinner is served in many delicate courses. Conversation is lively and interesting. By quarter to 8, the meal is concluding and there is discussion of how to retire.",
-    "discovery": "At 1 in the morning, as guests are starting to make their way towards bed, there is a loud commotion. One of the servants has discovered there's been a murder!",
+    "dinner": "At 6 o'clock everyone reconvenes in the dining hall, looking fit for royal audience. The dinner is served in many delicate courses. Conversation is lively and interesting. By quarter to 7, the meal is concluding and there is discussion of how to retire.",
+    "discovery": "At midnight, as guests are starting to make their way towards bed, there is a loud commotion. One of the servants has discovered there's been a murder!",
     "npc_alibi": "The servants are all summoned and questioned. Each servant corroborates the same story; until a nightly round when the body of Count Ludwig IV was found, all of the servants had been down stairs in the servant common room together. No one was unaccounted for for more than a few minutes. If there is a murderer here, it is not one of them. You look around the room at the other guests, now all suspects.",
+    # Optional pictures for render_cards.py, found in the folder passed as --images
+    "images": {"invitation": "Bavarian_residence.jpg", "discovery": "Count_Ludwig_IV.jpg"},
     "mission": "Reality starts to set in - with a murderer on the loose, no one is safe. It is too far to get help from the authorities tonight. You need to discover who is the culprit before the night is up. Tell the truth, tell lies but try not to reveal your own secrets!"
 }
 

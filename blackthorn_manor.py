@@ -3,8 +3,8 @@ general = {
     "phase1": "The Arrival",
     "arrival": "As your carriage crests the hill on a chilly autumn evening, you see the vast silhouette of Blackthorn Manor. Inside, the Duke greets you warmly, a stately man in his late fifties with an air of reserved authority. Other guests arrive, and you are introduced to %s, %s, %s, and %s.",
     "phase2": "The Evening",
-    "dinner": "At precisely 7 o'clock, the party gathers in the grand dining hall. The dinner is exquisite: venison, roast fowl, and delicacies abound. The conversation is civil, though an undertone of tension hangs in the air. By a quarter to 8, the evening's formalities wind down and the guests drift off to amuse themselves about the manor.",
-    "discovery": "In the dead of night, at 1 o'clock, a bloodcurdling scream echoes through the halls. Moments later, the butler bursts into the great hall - 'The Duke! The Duke has been murdered!'",
+    "dinner": "At precisely 6 o'clock, the party gathers in the grand dining hall. The dinner is exquisite: venison, roast fowl, and delicacies abound. The conversation is civil, though an undertone of tension hangs in the air. By a quarter to 7, the evening's formalities wind down and the guests drift off to amuse themselves about the manor.",
+    "discovery": "In the dead of night, at the stroke of midnight, a bloodcurdling scream echoes through the halls. Moments later, the butler bursts into the great hall - 'The Duke! The Duke has been murdered!'",
     "npc_alibi": "The household staff is interrogated. They all insist they were together in the servant quarters all evening, preparing for morning duties. If there is a killer, it must be one of the guests. The air grows cold with suspicion as you eye one another.",
     "mission": "The realization dawns - there's no leaving until the murderer is found. Trust no one, reveal nothing, and uncover the truth before someone else falls victim."
 }

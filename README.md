@@ -9,14 +9,20 @@ identified with certainty.
 ## Running it
 
 ```sh
-python murdererer.py
+python murdererer.py --out_path game1
+python render_cards.py game1/game.json --images bavarian_hunting_lodge
 ```
 
-The script writes one `<Character Name>.txt` sheet per player into the current
-directory. It also prints every sheet, a timetable of the evening and the
-solution to the console, so the person running it should not read the console
-output if they are also playing. (The `--out_path` option is accepted but not
-used yet.)
+The first command writes into the `game1` folder (or the current folder if
+`--out_path` is left out):
+
+- one `<Character Name>.txt` sheet per player;
+- `game.json`, which holds every player's sheet as structured data plus the
+  solution, and is what the card renderer reads.
+
+It also prints every sheet, a timetable of the evening and the solution to the
+console, so the person running it should not read the console output if they
+are also playing.
 
 Choose a difficulty with `--difficulty easy` or `--difficulty hard` (the
 default). See [Difficulty](#difficulty) below.
@@ -25,17 +31,76 @@ The scenario comes from `bavarian_hunting_lodge_mission.py`. To play
 `blackthorn_manor.py` or another scenario instead, change the import at the top
 of `murdererer.py`.
 
+### Printable cards
+
+The second command turns `game.json` into one HTML file of cards per player,
+written to `game1/cards/`. Open a player's file in a browser and print it:
+
+- **Paper:** A4 or US Letter, at 100% scale ("actual size"), with "background
+  graphics" turned on.
+- **Double-sided:** print double-sided, flipping on the long edge, so each card
+  gets the shared card back. If your printer can't do double-sided, add
+  `--no_backs` to leave out the back pages.
+- **Cutting:** cut along the dashed lines. Cards are 92 × 127 mm, four to a page.
+
+Each player gets these cards, in order:
+
+1. **How to Play.**
+2. **Character:** portrait, description and motive.
+3. **An Invitation** and **Dinner.**
+4. **One card for each hour** from 7 to 11. Cards describing a murder or minor
+   crime have a red frame and are marked *Secret*. If the player witnessed a
+   minor crime during an hour, a **sighting** evidence card follows that hour's
+   card.
+5. **The Discovery** and **The Investigation**, marked "Read last".
+6. **Clue** evidence cards: one per clue the player noticed about another guest.
+
+Players can show evidence cards to back up a claim without revealing their whole
+evening.
+
+**Pictures:** `--images` points at a folder of pictures (`.jpg`, `.png`,
+`.webp` or `.gif`). It used to be called `--portraits`, which still works.
+
+- **Character portraits** are matched by the character's name, ignoring case
+  and punctuation, so `Dr_Sofia_Devrise.jpg` or "A portrait of Hinrich von
+  Wagner….webp" both work. Characters without one get a placeholder.
+- **Scene pictures** are named in the scenario's `general` settings, for
+  example `"images": {"invitation": "Bavarian_residence.jpg", "discovery":
+  "Count_Ludwig_IV.jpg"}`. The `invitation` picture is cropped to a banner
+  across the top of the Invitation card. The `discovery` picture is shown as a
+  framed portrait on The Discovery card, which suits the victim. Both are
+  optional.
+
+Pictures are embedded in the HTML, so each file stands alone. Keep them to
+about 1000 pixels: that's sharper than a home printer can show at card size,
+and keeps each deck to about 1 MB. Full-size source images can live in an
+`originals/` subfolder, which git ignores.
+
+**Long text:** a card whose text is too long shrinks it to fit. If it still
+doesn't fit at the smallest size, the card gets a red outline on screen (not
+in print) so you can shorten the scenario text.
+
+**Times:** cards tied to a time of night show that hour as a large, faint
+numeral in the background:
+
+- the Dinner card shows 6;
+- each hour card shows its hour, 7 to 11;
+- each sighting card shows the hour of the sighting;
+- the Discovery, Investigation and clue cards show 12.
+
+To change the rules text, edit `RULES` at the top of `render_cards.py`.
+
 ## How a game plays out
 
 Each player gets a sheet with three parts:
 
 1. **The Arrival**: who you are, the other four guests, and your secret
    **motive** for killing the host. Every guest has a motive.
-2. **The Evening**: dinner, then one entry for each hour from
-   8 to 12 o'clock saying which room you went to and who, if anyone, was with
+2. **The Evening**: dinner at 6 o'clock, then one entry for each hour from
+   7 to 11 o'clock saying which room you went to and who, if anyone, was with
    you. It also describes what you noticed in the room and anything you saw
    happening elsewhere.
-3. **The Discovery**: the host's body is found and everyone learns which room
+3. **The Discovery**: at midnight the host's body is found and everyone learns which room
    the murder happened in. The servants are ruled out. Your sheet may also list
    **clues** you noticed about other guests (for example "you notice X smells
    strongly of cigar smoke").
@@ -159,7 +224,12 @@ The tests generate 100 games from fixed seeds for each scenario and difficulty, 
 - pooling the innocent players' information leaves exactly one possible
   suspect, even if the murderer shares nothing. Easy games stay solvable
   even if players think clues might come from group visits, while some hard
-  games don't.
+  games don't;
+- `game.json` holds the same content as the text sheets, with secrets and
+  companions recorded correctly;
+- every piece of a player's sheet appears on one of their cards, each front
+  page is followed by a matching page of backs, and pictures are matched and
+  embedded (`tests/test_render_cards.py`).
 
 ## Limitations
 
